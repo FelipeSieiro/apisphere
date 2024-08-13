@@ -16,7 +16,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 public class UserController {
 
     @Autowired
-    UserServices service;
+    UserService service;
 
     @GetMapping
     public List<User> findAll(){
@@ -26,15 +26,15 @@ public class UserController {
     @PostMapping
     public ResponseEntity<User> create(@RequestBody User user, UriComponentsBuilder uriBuilder){
         service.create(user);
+
         var uri = uriBuilder
-                        .path("/users/{id}")
-                        .buildAndExpand(user.getId())
-                        .toUri();
+                    .path("/users/{id}")
+                    .buildAndExpand(user.getId())
+                    .toUri();
 
         return ResponseEntity
                     .created(uri)
                     .body(user);
     }
-    
-    
+
 }

@@ -1,5 +1,5 @@
 CREATE TABLE IF NOT EXISTS tb_sphere_users(
-    bigint auto_increment,
+    id bigint auto_increment,
     name varchar(255),
     bio varchar(255),
     email varchar(255),

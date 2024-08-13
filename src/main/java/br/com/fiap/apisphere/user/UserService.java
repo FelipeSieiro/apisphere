@@ -1,12 +1,12 @@
 package br.com.fiap.apisphere.user;
 
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
-public class UserServices {
+public class UserService {
 
     @Autowired
     UserRepository repository;
@@ -18,6 +18,5 @@ public class UserServices {
     public User create(User user){
         return repository.save(user);
     }
-
 
 }
