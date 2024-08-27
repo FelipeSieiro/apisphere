@@ -16,10 +16,12 @@ public class AuthController {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final TokenService tokenService;
 
-    public AuthController(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+    public AuthController(UserRepository userRepository, PasswordEncoder passwordEncoder, TokenService tokenService) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+        this.tokenService = tokenService;
     }
 
     @PostMapping("/login")
@@ -32,15 +34,7 @@ public class AuthController {
                 .matches(credentials.password(), user.getPassword())
         ) throw new RuntimeException("Access denied");
 
-        var expiresAt = LocalDateTime.now().plusHours(1).toInstant(ZoneOffset.ofHours(-3));
-        Algorithm algorithm = Algorithm.HMAC256("assinatura");
-        String token = JWT.create()
-                .withIssuer("sphere")
-                .withSubject(credentials.email())
-                .withClaim("role", "admin")
-                .withExpiresAt(expiresAt)
-                .sign(algorithm);
+        return tokenService.create(user);
 
-        return new Token(token);
     }
 }
