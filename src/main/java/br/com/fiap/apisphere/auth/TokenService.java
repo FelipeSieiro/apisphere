@@ -12,6 +12,7 @@ import java.time.ZoneOffset;
 
 @Service
 public class TokenService {
+
     private final UserRepository userRepository;
     Algorithm algorithm = Algorithm.HMAC256("assinatura");
 
@@ -19,7 +20,7 @@ public class TokenService {
         this.userRepository = userRepository;
     }
 
-    public Token create(User user) {
+    public Token create(User user){
         var expiresAt = LocalDateTime.now().plusHours(1).toInstant(ZoneOffset.ofHours(-3));
 
         String token = JWT.create()
@@ -33,13 +34,14 @@ public class TokenService {
     }
 
     public User getUserFromToken(String token) {
-       var email = JWT.require(algorithm)
+        var email =JWT.require(algorithm)
                 .withIssuer("sphere")
                 .build()
                 .verify(token)
-               .getSubject();
+                .getSubject();
 
-       return userRepository.findByEmail(email)
-               .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+        return userRepository.findByEmail(email)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+
     }
-}
+}   

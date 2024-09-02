@@ -6,7 +6,7 @@ import lombok.Data;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "tb_sphere_users")
+@Table(name = "users")
 @Data
 public class User {
 
@@ -16,6 +16,7 @@ public class User {
     String bio;
     String email;
     String password;
+    String avatar;
     LocalDateTime createdAt;
     LocalDateTime updatedAt;
 

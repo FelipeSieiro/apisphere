@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
-import java.util.ArrayList;
+
 import java.util.List;
 
 @Component
@@ -28,32 +28,31 @@ public class AuthorizationFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
 
-        //header
+        //header ?
         var header = request.getHeader("Authorization");
-        if (header ==null){
+        if (header == null){
             filterChain.doFilter(request, response);
             return;
         }
 
-        //bearer
         //bearer ?
         if (!header.startsWith("Bearer ")) {
             response.setStatus(401);
             response.addHeader("Content-Type", "application/json");
             response.getWriter().write("""
-                {
-                    "message": "Token must starts with Bearer"
-                }
-            """);
+                        {
+                            "message": "Token must starts with Bearer"
+                        }
+                    """);
             return;
         }
 
         try {
-            //token valido?
+            //token valido ?
             var token = header.replace("Bearer ", "");
             User user = tokenService.getUserFromToken(token);
 
-            //autorizar!
+            //autorizar !
             var auth = new UsernamePasswordAuthenticationToken(
                     user.getEmail(),
                     user.getPassword(),
@@ -67,11 +66,10 @@ public class AuthorizationFilter extends OncePerRequestFilter {
             response.setStatus(403);
             response.addHeader("Content-Type", "application/json");
             response.getWriter().write("""
-                {
-                    "message": "%s"
-                }
-            """.formatted(e.getMessage()));
-            return;
+                        {
+                            "message": "%s"
+                        }
+                    """.formatted(e.getMessage()));
         }
     }
 }

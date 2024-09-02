@@ -25,16 +25,15 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public Token login(@RequestBody Credentials credentials) {
+    public Token login(@RequestBody Credentials credentials){
 
         var user = userRepository.findByEmail(credentials.email())
-                .orElseThrow(() -> new RuntimeException("Access denied"));
+                .orElseThrow(() -> new RuntimeException("Access Denied"));
 
-        if (!passwordEncoder
-                .matches(credentials.password(), user.getPassword())
-        ) throw new RuntimeException("Access denied");
+        if ( !passwordEncoder.matches(credentials.password(), user.getPassword()) )
+            throw new RuntimeException("Access Denied");
 
         return tokenService.create(user);
-
     }
+
 }

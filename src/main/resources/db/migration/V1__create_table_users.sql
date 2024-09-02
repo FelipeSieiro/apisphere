@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS tb_sphere_users(
+CREATE TABLE IF NOT EXISTS users(
     id bigint auto_increment,
     name varchar(255),
     bio varchar(255),
