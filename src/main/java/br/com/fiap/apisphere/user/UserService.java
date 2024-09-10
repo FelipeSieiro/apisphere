@@ -1,12 +1,7 @@
 package br.com.fiap.apisphere.user;
 
-import java.io.InputStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.List;
-
-
+import br.com.fiap.apisphere.mail.MailService;
+import br.com.fiap.apisphere.user.dto.UserProfileResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
@@ -16,9 +11,13 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-
-import br.com.fiap.apisphere.user.dto.UserProfileResponse;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.List;
 
 @Service
 public class UserService {
@@ -27,6 +26,8 @@ public class UserService {
     UserRepository repository;
     @Autowired
     private PasswordEncoder passwordEncoder;
+    @Autowired
+    private MailService mailService;
 
     public List<User> findAll(){
         return repository.findAll();
@@ -34,6 +35,8 @@ public class UserService {
 
     public User create(User user){
         user.setPassword(passwordEncoder.encode(user.getPassword()));
+        user.setAvatar("https://avatar.iran.liara.run/username?username=" + user.getName());
+        mailService.sendWelcomeEmail(user);
         return repository.save(user);
     }
 
@@ -66,7 +69,7 @@ public class UserService {
                     .orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
             var baseUrl = ServletUriComponentsBuilder.fromCurrentContextPath().build().toUriString();
-            var avatarUrl = baseUrl + "/users/avatar/" + destinationFile.getFileName();
+            var avatarUrl =  baseUrl + "/users/avatar/" + destinationFile.getFileName();
             user.setAvatar(avatarUrl);
             repository.save(user);
 
@@ -74,17 +77,20 @@ public class UserService {
             System.out.println("Erro ao salvar. " + e.getCause());
         }
 
+
+
     }
 
     public ResponseEntity<Resource> getAvatar(String filename) {
-        Path path = Paths.get("src/main/resources/static/avatars"+ filename);
-        Resource file =  UrlResource.from(path.toUri());
+        Path path = Paths.get("src/main/resources/static/avatars/" + filename);
+        Resource file = UrlResource.from(path.toUri());
 
         return ResponseEntity
                 .ok()
                 .contentType(MediaType.IMAGE_JPEG)
                 .body(file);
     }
+
 
     public List<User> findByName(String name) {
         return repository.findByNameContainsIgnoreCase(name);

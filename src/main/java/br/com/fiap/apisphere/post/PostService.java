@@ -16,5 +16,9 @@ public class PostService {
     public Page<Post> findAll(Pageable pageable){
         return postRepository.findAll(pageable);
     }
+
+    public Post create(Post post) {
+        return postRepository.save(post);
+    }
 }
 
